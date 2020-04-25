@@ -1,0 +1,20 @@
+<table id="float_table" width ="100%" class = "table table-hover">
+  <thead class="thead-dark">
+    <tr>
+        {% for column,meta_field in columns.items %}
+        <th>
+          {% if meta_field.verbose_name %}
+            {{ meta_field.verbose_name }}
+          {% else %}
+            {{ column }}
+          {% endif %}
+        </th>
+        {% endfor %}
+    <tr>
+  </thead>
+  {% if not category_message_dict %}
+    {% include "crm/ajax_forms/table_body.html" %}
+  {% else %}
+    {% include "crm/db_templates/table_body.html" %}
+  {% endif %}
+</table>

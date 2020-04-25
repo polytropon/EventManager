@@ -1,0 +1,2 @@
+{# conditional event.confirm_with_address used to remove address in selected cases #}
+Teilnahmebestätigung: {{ event.Bezeichnung }} / {{ event.Datum }} / {% if event.Veranstaltungsort and event.confirm_with_address %}{{ event.Veranstaltungsort }}{% elif event.Raum_Einladung %}{{ event.Raum_Einladung }}{% endif %}

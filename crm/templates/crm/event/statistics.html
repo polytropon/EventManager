@@ -1,0 +1,26 @@
+{% load admin_urls %}
+<ul class="list-group">
+  <li class="list-group-item">{{ statistics.bestätigt }} aus {{ statistics.Anmeldungen }} Anmeldungen bestätigt bei max. {{ event.Maximale_Teilnehmer_ }} Seminarteilnehmern
+    {% if statistics.zu_bestätigen %}
+      </br>({{statistics.confirmed_after_confirmation }} nach Versand)
+    {% endif %}
+  </li>
+  <li class="list-group-item"><a href = {% url 'crm:invited_persons' event.pk %} target = "_blank">{{ invited|length }} eingeladen</a></li>
+
+</ul>
+
+<!-- <script>
+function statistics(){
+  $.ajax({
+    url: '{% url 'crm:seminar_statistics' event.pk %}',
+    data: {},
+    dataType: 'html',
+    success: function (data) {
+      $("#statistics").html(data);
+    }
+  });
+}
+
+$ ( document ).ready(statistics());
+
+</script> -->

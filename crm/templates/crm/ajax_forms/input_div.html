@@ -1,0 +1,25 @@
+{% load input_div %}
+{% load widget_tweaks %}
+
+  <div class = 'editable form-group' data-startvalue='{% field_content field %}' data-column='{{ field.name }}' data-pk='{{ field.form.instance.pk }}' data-model='{% form_model field %}' >
+    {% if field.name in read_only or readonly == True %}
+      {# field #} {% render_field field class="form-control" readonly=True %}
+    {% else %}
+        {# field.field.widget.input_type #}
+        
+        {# normal editing #} 
+        {% if field.field.widget.input_type == "checkbox" %}  
+          {% render_field field class="form-control" onclick="save(event)" %}
+        {% elif field.value|date:'Y-m-d\TH:i' %}
+          <input type="datetime-local" name="" value="{{ field.value|date:'Y-m-d\TH:i'}}" onchange="save(event)" class="form-control" id="id_notice">
+        
+        {% else %}
+
+          {% render_field field class="form-control" onchange="save(event)" %}
+        {% endif %}
+        <small class="form-text text-muted">{{ field.help_text }}</small>      
+
+      {% endif %}
+
+  </div>
+

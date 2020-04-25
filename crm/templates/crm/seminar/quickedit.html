@@ -1,0 +1,5 @@
+{% for field in form %}
+    <div class="col-xs- 12 col-s-6 col-md-4 col-lg-4 mt-3{% if field.name == referent %} form-check form-check-inline {% endif %}">
+        <strong>{{ field.label }}</strong>: {% include 'crm/ajax_forms/input_div.html' %}
+    </div>
+{% endfor %}

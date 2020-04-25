@@ -1,0 +1,39 @@
+  {% for event in events %}
+    {% if event.site_listed %}
+      <h4>
+        {% if event.Ende and event.Ende.day != event.Beginn.day %}
+          {{ event.Beginn|date:"d." }} – {{ event.Ende|date:"d. F Y," }}
+        {% else %}
+          {{ event.Beginn|date:"d. F Y," }}
+        {% endif %}
+        {% if event.Raum_Einladung != event.Bundesland.Landesverband %}
+          {{ event.Raum_Einladung }} ({{ event.Bundesland.Landesverband }})
+        {% else %}
+          {{ event.Raum_Einladung }}
+        {% endif %}
+      </h4>
+
+    {% if event.link_active %}<a href="{{ event.Anmeldungsseite }}" target="_blank">{% endif %}<h3>
+
+    {# additional condition for turning off link when event full removed due to no-show: event.confirmed_cache < event.Maximale_Teilnehmer_ #}
+        {{ event.Format.Bezeichnung }}:<br>
+        {% if event.Modul and not event.Titel %}
+          {{ event.Modul.Bezeichnung }}
+        {% elif event.Modul and event.Titel %}
+          {{ event.Modul.Bezeichnung }}<br>{{ event.Titel }}
+        {% elif not event.Modul and event.Titel %}
+          {{ event.Titel }}
+        {% elif not event.Modul and not event.Titel %}
+          Diese Veranstaltung hat weder einen Titel noch wird sie einem Modul (z.B. Demografie) zugeordnet.
+        {% endif %}</h3>
+    {% if event.notice %}<h5>{{ event.notice }}</h5>{% endif %}
+    {# Must contain same conditions as beginning of a tag above #}
+    {% if event.link_active %}</a>{% endif %}
+        {% if event.video %}
+          <a href="{{ event.video }}" target="_blank"><i class="icon-video">Video</i></a>
+        {% endif %}
+
+        <hr class=" hr_color" style="margin: 0 auto 30px;">
+        {% endif %}
+
+  {% endfor %}

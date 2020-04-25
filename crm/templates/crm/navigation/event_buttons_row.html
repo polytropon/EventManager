@@ -1,0 +1,29 @@
+{% load admin_urls %}
+{# embedded inside event_buttons_col on the start page, can be used independently on other pages #}
+    <div class="row">
+      <div class="col-6">
+        <a class ="card-link" href = "{% url 'crm:edit_registrations' event.pk %}" target="_blank">
+          <i class="fas fa-users" title="Anmeldungen und Bestätigungen"></i>
+        </a>
+
+      </div>
+      <div class="col-6">
+        <a href ="{% url event|admin_urlname:'change' event.pk %}" target="_blank">
+          <i class="fas fa-edit" title="Veranstaltung bearbeiten"></i>
+        </a>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-6">
+
+        <a href ="{% url "register" event.pk %}" target="_blank">
+          <i class="fas fa-sign-in-alt" title="Anmeldeseite"></i>
+        </a>
+
+      </div>
+      <div class="col-6">
+        <a href ="{% url "linked_templates" "veranstaltung" event.pk %}" target="_blank">
+          <i class="far fa-file-alt" title="Anmeldeseite"></i>
+        </a>
+      </div>
+    </div>

@@ -1,0 +1,82 @@
+{% extends 'crm/base.html' %}
+{% block header %}
+<title>Übersicht Anmeldungen</title>
+{% endblock %}
+{% block content %}
+{% load admin_urls %}
+<div class="container-fluid">
+  <div class ="row mt-3">
+    <div class = "col-6 my-auto mt-3">
+      <h2>Anmeldungen – {{ Zeit }}</h2>
+    </div>
+  </div>
+</div>
+
+  {% if events %}
+    {% include 'crm/registrations_overview/table.html' %}
+  {% else %}
+    <h2>Keine Veranstaltungen</h2>
+  {% endif %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+
+
+  function syncGravityForms() {
+    var urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams.get('time'));
+    console.log( "syncing gravity forms" );
+    $.ajax({
+      url: '{% url 'crm:syncGravityForms' %}',
+      data: {"time":urlParams.get('time')},
+      dataType: 'html',
+      success: function (data) {
+        // Replace table with updated table
+        var element = $("#table");
+        var parentElement = element.parent();
+        element.remove();
+        var newElement = $(data);
+        parentElement.append(newElement);
+      }
+    });
+  }
+
+  function update_future_registrations() {
+    var urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams.get('time'));
+    console.log( "Updating registrations" );
+    $.ajax({
+      url: '{% url 'crm:update_future_registrations' %}',
+      data: {},
+      dataType: 'json',
+      success: function (data) {
+        console.log("New registrations:");
+        console.log(data);
+        if (data == true) {
+          console.log("New registrations, reloading page");
+          // location.reload();
+        } else if (data == false) {
+          console.log("No new registrations, not reloading page");
+        }
+
+      }
+    });
+  }
+
+  // $( document ).ready(syncGravityForms())
+  // $( document ).ready(update_future_registrations())
+
+
+// Schwebende Überschriften
+var $table = $('#float_table');
+    var reinit = $table.floatThead('destroy');
+    $('#float_table').floatThead({
+      position: 'auto'
+    });
+</script>
+{% endblock %}

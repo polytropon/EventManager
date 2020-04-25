@@ -1,0 +1,40 @@
+{% extends 'crm/base.html' %}
+{% block header %}
+<title>Einladungen {{ event.Beginn|date:'d.m.y' }} {{ event.Bezeichnung }}</title>
+{% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class = row>
+    <div class="col-12"><h1>Einladungen {{ event.Beginn|date:'d.m.y' }}<br>{{ event.Bezeichnung }}</h1></div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      <h3>{{event.invited|length}} eingeladen</h3>
+      {% for person in event.invited %}
+        <p>{{ person }}
+        {% for answer in answers %}
+          {% if answer.person == person %}
+            <strong>
+              {% if answer.Status %}
+                {{ answer.Status }}
+              {% else %}
+                Anmeldung nicht zugeordnet
+              {% endif %}
+            </strong>
+          {% endif %}
+
+        {% endfor %}
+      </p>
+      {% endfor %}
+    </div>
+    <div class="col-sm">
+      <h3>{{event.FormEntries.all|length}} Antworten</h3>
+      {% for entry in answers %}
+        <p>{{ entry.person }}: {% if entry.Status %}{{ entry.Status }}{% else %}nicht zugeordnet{% endif %}</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

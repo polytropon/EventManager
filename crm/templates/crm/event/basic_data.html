@@ -1,0 +1,10 @@
+{% load admin_urls %}
+<div class="card">
+
+    <div class="card-body">
+      <h5 class="card-title">{{ event.Bezeichnung }}</h5>
+      <p class="card-text">{{ event.Beginn }}</br>{{ event.Raum_Einladung }}</p>
+      {% include "crm/navigation/event_buttons_row.html" %}
+    </div>
+
+  </div>

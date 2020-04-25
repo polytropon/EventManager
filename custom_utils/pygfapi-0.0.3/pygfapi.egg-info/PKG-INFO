@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: pygfapi
+Version: 0.0.3
+Summary: Library for interacting with Gravity Forms Web API
+Home-page: https://bitbucket.org/ArlingtonCounty/pygfapi
+Author: Arlington County
+Author-email: webmaster@arlingtonva.us
+License: GPLv3
+Description: UNKNOWN
+Keywords: gravityforms wordpress
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Internet

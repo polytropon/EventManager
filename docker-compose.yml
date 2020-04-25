@@ -1,0 +1,67 @@
+version: "2"
+
+services:
+  web:
+    build: "."
+    links:
+      - "db:postgres"
+      - "rabbitmq:rabbitmq"
+    ports:
+      - "8000:80"
+    volumes:
+      - ".:/app:rw"
+      - "./data:/data:rw"
+    command: python manage.py runserver 0.0.0.0:80
+    env_file: .env-local
+
+  db:
+    image: postgres:9.5.20-alpine
+    ports:
+        - 5432:5432
+    environment:
+      POSTGRES_DB: "db"
+    volumes:
+      - ".:/app:rw"
+
+  rabbitmq:
+    image: rabbitmq:3.5-management
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+    expose:
+      - "15672"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: secret_cookie_value
+  
+  celeryworker:
+    build: "."
+    links:
+      - "db:postgres"
+      - "rabbitmq:rabbitmq"
+    volumes:
+      - ".:/app:rw"
+      - "./data:/data:rw"
+    command: aldryn-celery worker
+    env_file: .env-local
+
+  celerybeat:
+    build: "."
+    links:
+      - "db:postgres"
+      - "rabbitmq:rabbitmq"
+    volumes:
+      - ".:/app:rw"
+      - "./data:/data:rw"
+    command: aldryn-celery beat
+    env_file: .env-local
+  
+  celerycam:
+    build: "."
+    links:
+      - "db:postgres"
+      - "rabbitmq:rabbitmq"
+    volumes:
+      - ".:/app:rw"
+      - "./data:/data:rw"
+    command: aldryn-celery cam
+    env_file: .env-local

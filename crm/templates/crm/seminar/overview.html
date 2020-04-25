@@ -1,0 +1,44 @@
+<!-- {% extends 'crm/base.html' %}
+{% block header %}
+<title>Seminare</title>
+{% endblock %}
+{% block content %} -->
+  {% if seminare %}
+  <div id="table" class="floatThead-container">
+    <table id="anmeldungen" width ="100%">
+      <thead>
+      <tr>
+        <th>Thema</th>
+        <th>Datum (Fr.-So.)</th>
+        <th>Raum</th>
+        <th>Plätze verfügbar</th>
+      </tr>
+      </thead>
+        {% for event in seminare %}
+        <tr>
+          <td><a href="{{ event.Anmeldungsseite }}/">{{ event.Bezeichnung }} </a></td>
+          <td>
+              {{ event.Beginn|date:"d." }} – {{ event.Ende|date:"d. F Y" }}
+          </td>
+          <td>{{ event.Raum_Einladung }}</td>
+          <td>{% if event.booked_out %}
+            Nein
+            {% else %}
+            Ja
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+  {% else %}
+    <h2>Keine Seminare</h2>
+  {% endif %}
+<!-- {% endblock %} -->
+<!--
+{% block javascript %}
+<script>
+var $table = $('#anmeldungen');
+var reinit = $table.floatThead('destroy');
+$('#anmeldungen').floatThead({
+  position: 'auto'
+});
+{% endblock %} -->

@@ -1,0 +1,14 @@
+{% load admin_urls %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Werkzeuge</h5>
+        <p class="card-text"><a class = "btn btn-primary" href = "{% url 'crm:participants_export_excel' event.pk %}">Excel für Hotel (bestätigte Teilnemer)</a></p>
+        <p class="card-text"><a class = "btn btn-primary" href = "{% url 'crm:all_participants_export_excel' event.pk %}">Excel (Anmeldungen)</a></p>
+        {% if event.Veranstaltungsort and event.Straße and event.PLZ and event.Ort %}
+        <p class="card-text"><button class="btn btn-primary" onclick='sendAnswersParticipation()'>Bestätigungen versenden</button></p>
+        {% else %}
+        <p class="card-text"><a href ="{% url event|admin_urlname:'change' event.pk %}" target = "_blank" class="btn btn-primary">Keine Bestätigung möglich, bitte Daten zum Standort abspeichern und Seite neu laden.</a></p>
+        {% endif %}
+        <p class="card-text"><button id="toggleTrash" class="btn btn-primary activated" onclick='toggleTrash()'>Papierkorb anzeigen</button></p>
+    </div>
+</div>

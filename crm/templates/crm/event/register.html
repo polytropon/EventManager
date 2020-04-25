@@ -1,0 +1,317 @@
+{% extends "crm/base.html" %}
+{% load widget_tweaks %}
+
+{% block navbar %}{% endblock %}
+
+{% block css %}
+<style>
+input,select,textarea {
+    border: 3px solid #113273 !important;
+}
+.hide {
+    display: none;
+  }
+  .dark-blue, body {
+    background:#113273;
+  }
+
+.form-group.required > label:after {content:" *";color:#dc3545;}
+</style>
+{% endblock%}
+{% block header %}
+<title>{{ event.Beginn|date:"d.m.y" }} {{ event.Bezeichnung }}</title>
+{% endblock %}
+
+{% block outerdivclasses %}dark-blue" style="border-top:solid #113273 1px;{% endblock %}
+{% block content %}
+    
+<div class="container-fluid">
+    {% if user.is_authenticated %}    
+    <div class="row mt-3 p-3 bg-light">
+        {% include "crm/navigation/event_buttons_col.html" %}
+        <h5>Sie sind als Benutzer {{ user }} eingeloggt. Seite {% if not event.site_ready %}nicht{%endif%} öffentlich einsehbar, {% if not event.site_listed%}nicht {% endif%}in Übersicht gelistet. Link {% if not event.link_active %}nicht {% endif%}aktiv.
+        </h5><h2></h2>
+    </div>
+    {% endif %}
+    {% if user.is_authenticated or event.site_ready %}
+
+    <div class="row mt-3">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class ="card-body">
+                                
+                                <h3 class="card-title text-uppercase font-weight-bold">{{ event.Format }}</h3>                                
+                                <h5 class="card-title mb-0">{{ event.Bezeichnung }}</br>{{ event.Raum_Einladung }}</br></h5>                                
+                                <small class ="text-muted">Der genaue Ort wird mit der Teilnahmebestätigung bekanntgegeben.</small>
+
+                                <p class="card-text mt-3">{{ event.Zeitangaben_HTML|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if event.Modul.Beschreibung %}
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class ="card-body">
+                                <h3 class="card-title">{{ event.Modul.Bezeichnung }}</h3>
+                                <p class="card-text">{{ event.Modul.Beschreibung|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if event.description %}
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class ="card-body">
+                                <h3 class="card-title">Über diese Veranstaltung</h3>
+                                <p class="card-text">{{ event.description|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        {% if request.method == "GET" or error %}
+                        {# Right column with form begins #}
+                        <div class="card">
+                            <div class ="card-body">
+                                <h3 class ="card-title text-uppercase font-weight-bold">Anmeldung</h3><small class="text-danger">Pflichtfelder*</small>
+
+                                <div class="container-fluid">
+                                    <form action="{% url 'register' event.id %}" method="post" id="form">{% csrf_token %}
+
+                                        {% if request.user.is_authenticated %}
+                                        <div class="form-row bg-light">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+                                                <div class ="form-check form-group">
+                                                    <input type="checkbox" name="referent">
+                                                    <label class="form-check-label" for="referent">Referent</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+                                                <div class ="form-check form-group">
+
+                                                    <input type="checkbox" name="send_confirmation_mail">
+                                                    <label class="form-check-label" for="send_confirmation_mail">Bestätigungsmail versenden</label>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% if form.non_field_errors %}
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                {% for error in form.non_field_errors %}
+                                                <h4 class ="card-title alert alert-danger">{{ error }}</h4>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                
+                                                    {# form.Anrede.label_tag #}{# render_field form.Anrede class="form-control" #}
+
+                                                    {{ form.Anrede.label_tag }}
+                                                    {% for option in form.Anrede %}
+                                                        {% if option.id_for_label != "id_Anrede_0" %}
+                                                        <div class ="form-check">
+                                                            {{ option }}
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                
+                                            </div>                    
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group">
+                                                {{ form.Titel.label_tag }}{% render_field form.Titel class="form-control"%}
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.E_Mail.label_tag }}{% if required_class %}{% render_field form.E_Mail class="form-control" required="" type="email"%}{% else %}{% render_field form.E_Mail class="form-control" type="email"%}{% endif %}
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.Mobiltelefon.label_tag }}{% if required_class %}{% render_field form.Mobiltelefon class="form-control" required=""%}{% else %}{% render_field form.Mobiltelefon class="form-control" %}{% endif %}
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.Familienname.label_tag }}{% render_field form.Familienname class="form-control" required="" %}
+                                                {{ form.Familienname.errors }}
+                                            </div>    
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.Vorname.label_tag }}{% if required_class %}{% render_field form.Vorname class="form-control" required="" %}{% else %}{% render_field form.Vorname class="form-control" %}{% endif %}
+                                                {{ form.Vorname.errors }}
+                                            </div>    
+                                        </div>
+
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.Straße.label_tag }}{% if required_class %}{% render_field form.Straße class="form-control" required="" %}{% else %}{% render_field form.Straße class="form-control" %}{% endif %}
+                                                {{ form.Vorname.errors }}
+                                            </div>    
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group">                                    
+                                                {{ form.Zusatz_Adresse.label_tag }}{% if required_class %}{% render_field form.Zusatz_Adresse class="form-control" placeholder="z.B. bei Schmidt" %}{% else %}{% render_field form.Zusatz_Adresse class="form-control" placeholder="z.B. bei Schmidt" %}{% endif %}
+                                                {{ form.Zusatz_Adresse.errors }}
+                                            </div>    
+                                        </div>
+
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.PLZ.label_tag }}{% if required_class %}{% render_field form.PLZ class="form-control" required="" %}{% else %}{% render_field form.PLZ class="form-control" %}{% endif %}
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.Ort.label_tag }}{% if required_class %}{% render_field form.Ort class="form-control" required=""%}{% else %}{% render_field form.Ort class="form-control" %}{% endif %}
+                                            </div>    
+                                        </div>
+                                        {# Invitation code exists as charfield in forms.SeminarRegistrationForm, not in FormEntry model. #}
+                                        {% if invitation_code_required %}
+                                        <div class="row form-row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3 form-group {{ required_class }}">
+                                                {{ form.invitation_code.label_tag }}{% if required_class %}{% render_field form.invitation_code class="form-control" required="" %}{% else %}{% render_field form.invitation_code class="form-control" %}{% endif %}
+                                                {{ form.Zusatz_Adresse.errors }}
+                                            </div>
+                                        </div>
+                                        {% endif %}                                      
+
+                                        {% if form.bookingoption.1 %}
+                                        {# Option with id 0 is a null option, deactivated if multiple options available #}
+                                        <div class="row form-row">
+                                            <div class="col-12 mt-3 form-group {{ required_class }}">
+                                                {{ form.bookingoption.label_tag }}
+                                                {# Options are selected and filtered (public/not public) in __init__ function of Forms.SeminarRegistrationForm. #}
+                                                {% for option in form.bookingoption %}
+                                                    {% if option.id_for_label != "id_bookingoption_0" %}
+                                                    <div class ="form-check">
+                                                        {{ option }}
+                                                    </div>
+                                                    {% endif %}
+                                                {# form.bookingoption.label_tag }}{% render_field form.bookingoption class="form-control" onchange="bookingOption(event)" required="" #}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="row form-row  hide" id="room_partner">
+                                            <div class="col-12 mt-3 form-group">
+                                                {{ form.Zweitperson_Zimmer.label_tag }} {% render_field form.Zweitperson_Zimmer class="form-control" %}
+                                                <small id="room_partner_help" class="form-text text-muted">Bei Buchung eines Doppelzimmers ist anzugeben, mit wem Sie das Zimmer teilen möchten. Die Zweitperson muss sich unabhängig von Ihnen für das Seminar anmelden. Dieses Feld dient nur der Zuordnung, ersetzt nicht die Anmeldung einer Zweitperson.</small>
+
+                                            </div>    
+                                        </div>
+
+                                        <div class="row form-row">
+                                            <div class="col-12 mt-3 form-group">
+                                                {{ form.Anmerkungen.label_tag }} {% render_field form.Anmerkungen class="form-control" %}
+                                            </div>    
+                                        </div>
+
+                                        {% for slug,consent in consents.items %}
+
+                                            <div class="row">
+                                                <div class="col-12 mt-3">
+                                                    <div class ="form-row">
+                                                        <div class ="form-check form-group {{ required_class }}">
+                                                            <input type="checkbox" name="{{ consent.name|slugify }}" {{ required_class }}>
+                                                            <label class="form-check-label" for="{{ consent.name|slugify }}">{{ consent.name }}</label>                                                        
+                                                            <small id="{{ consent.name|slugify }}" class="form-text text-muted">{{ consent.content|safe }}</small>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        {% endfor %}               
+
+                                        <div class="row">
+                                            <div class="col-12 mt-3">
+                                                <button type="submit" form="form" class="btn btn-primary mb-2" style ="background-color: #0095eb">Absenden</button>
+                                            </div>
+                                        </div>                        
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {# end conditional if method get#}
+                    {% elif request.method == "POST" %}
+
+                        <div class="card">
+                            <div class ="card-body">
+                                <h3 class ="card-title alert alert-success">Anmeldewunsch erhalten</h3>
+                                <p class = "card-text">
+                                    {{ formentry.person.anrede }}</br></br>
+                                    vielen Dank für Ihre Anmeldung.
+                                    {% if formentry.event.Format.Bezeichnung != "Interne Versammlung" %}
+                                    Sie erhalten eine E-Mail an {{ querydict.E_Mail }} mit einem Vermerk über den Eingang Ihrer Anfrage. Dieser Eingangsvermerk ist noch keine Bestätigung über Ihre Teilnahme. Sofern Plätze verfügbar sind, erhalten Sie zu einem späteren Zeitpunkt eine gesonderte Teilnahmebestätigung{% if formentry.event.Format.Bezeichnung == "Seminar" %} mit einer Aufforderung zur Zahlung Ihrer Teilnehmergebühren{% endif %}.
+                                    {% else %}
+                                    Sie erhalten eine E-Mail an {{ querydict.E_Mail }} mit einer Bestätigung über Ihre Teilnahme.
+                                    {% endif %}
+                                    </br></br></br>
+                                    Mit freundlichen Grüßen</br></br>
+                                    {# Ihr DES-{{ formentry.event.Format.Bezeichnung }}steam {{ formentry.event.Format.Bezeichnung }} #}
+                                    Ihr DES-Veranstaltungsteam</br>
+                                    {{ formentry.event.send_from_email }}
+                                    </br></br>
+                                    {% for field, value in display_values.items %}
+                                        {% if value %}
+                                            <span class ="badge badge-light">{{ field }}:</span>
+                                            {{ value }}</br>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    {# end conditional if method post#}
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+</div>
+          
+{% endblock %}
+{% block footer %}
+{% endblock %}
+{% block javascript %}
+<script>
+{# Triggered when bookingoption selector changes, show and hide field for room partner #}
+function bookingOption(event) {
+    var sel = event.srcElement;
+    room_type = sel.parentElement.textContent;
+
+    var room_partner_div = document.getElementById("room_partner");
+    console.log(room_partner_div);
+
+    if (room_type.includes("DZ")) {
+        room_partner_div.removeAttribute("class");
+    } else {
+        room_partner_div.setAttribute("class","hide");
+    }
+
+        }
+</script>
+
+{% endblock %}

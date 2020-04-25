@@ -1,0 +1,40 @@
+{% extends 'crm/base.html' %}
+{% block header %}
+<title>Start</title>
+{% endblock %}
+{% block content %}
+{% load admin_urls %}
+
+<div class="container">
+  <div class="row mt-3">
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+      <div class="card">
+        <div class ="card-body text-center">
+          <h3 class ="card-title">Nächste Veranstaltungen</h3>
+
+          <div class="container-fluid">
+            {% for event in future_events %}
+              {% include "crm/navigation/event.html" %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+        <div class="card">
+          <div class ="card-body text-center">
+            <h3 class ="card-title">Letzte Veranstaltungen</h3>
+            <ul class="list-group">
+              {% for event in past_events %}
+                {% include "crm/navigation/event.html" %}
+              {% endfor %}
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>{% endblock %}
+{% block footer %}
+{% endblock %}

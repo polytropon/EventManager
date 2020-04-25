@@ -1,0 +1,45 @@
+{% load admin_urls %}
+<div id="table" class="floatThead-container spaced_table table-hover">
+  <table width = "100%" id = "float_table" class = "table">
+    <thead>
+      <tr>
+        <th>Veranstaltung</th>
+        <th>Format</th>
+        <th>Datum</th>
+        <th>Raum</th>
+        <th>Anmeldungen (bestätigt / max.)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in events %}
+        <tr>
+          <th scope="row">
+            <a href="{% if v.Seite %}{{ v.Seite }}{% else %}{% url "register" v.pk %}{% endif %}" target="_blank">
+            {% if not v.Seite and v.Titel %}
+              {{ v.Titel }}
+            {% elif not v.Titel and v.Modul %}
+              {{ v.Modul.Bezeichnung }}
+            {% else%}
+            {{ v.Bezeichnung }}
+            {% endif %}
+            </a>
+            <a href ="{% url v|admin_urlname:'change' v.pk %}">(bearbeiten)</a>
+          </th>
+          <td>
+            {{ v.Format.Bezeichnung }}
+          </td>
+          <td>
+            {{ v.Beginn }}
+          </td>
+          <td>
+            {{ v.Raum_Einladung }}
+          </td>
+          <td style="width:5%">
+            <a href="{{ v.pk }}" target="_blank">{% if v.valid_form_entries_cache %}{{ v.valid_form_entries_cache }}{% else %}-{% endif %}
+              ({% if v.confirmed_cache %}{{ v.confirmed_cache }}{% else %}0{% endif %} / {{ v.Maximale_Teilnehmer_ }})</a>
+            <!-- {{ v.Anzahl_Anmeldungen }} -->          </td>
+        </tr>
+      {% endfor %}
+  </tbody>
+  </table>
+</div>

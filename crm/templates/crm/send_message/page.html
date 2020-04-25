@@ -1,0 +1,260 @@
+{% extends 'crm/base.html' %}
+{% load static %}
+{% load admin_urls %}
+{% block header %}
+<title>Nachricht versenden</title>
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+  <div class ="row mt-5">
+    <div class ="col-12">
+      <h4>Betreff</h4>
+      <input type ="text" id="subject">
+    </div>
+  </div>
+
+  <div class ="row mt-5">
+    <div class ="col-12">
+      <h4>Text</h4>
+      <textarea rows="30" cols="200" width="100%" id ="body">
+{% verbatim %}{{ Person.anrede }}
+{% endverbatim %}
+
+Mit freundlichen Grüßen
+
+--
+
+Ben Austin
+
+T.: 015254748652
+E.: ben.austin@erasmus-stiftung.de
+
+https://erasmus-stiftung.de
+
+Desiderius-Erasmus-Stiftung e.V.
+Unter den Linden 21
+10117 Berlin
+
+Eintragung im Vereinsregister.
+Registergericht: AG Lübeck
+Registernummer: VR 4144 HL
+  </textarea>
+    </div>
+  </div>
+
+  <div class ="row mt-5">
+    <div class ="col-12">
+      <h4>Einzelpersonen anschreiben</h4>
+    </div>
+  </div>
+  <div class ="row mt-5">
+    <div class="col-6">
+      {{ form.media }}
+      <form action="" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <!-- <input type="submit" id ="send"/> -->
+      </form>
+<p><a href ="/admin/crm/person/add/" target="_blank">Neue Person anlegen</a></p>
+    </div>
+    <div class = "col-6">
+      <button id="send-single">Absenden</button>
+    </div>
+    <p id="person_sent_message"></p>
+  </div>
+
+  <div class ="row mt-5" id ="groups">
+    <div class = "col-12">
+      <h4>Gruppen</h4>
+      <select id="group_selector">
+        <option class = "group" value = null>---
+        {% for g in Gruppen %}
+            <option id="group_{{p.id}}" name="group_{{ g.id }}" value = {{ g.id }} class ="group">
+            {{g.name}}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+
+  <div class ="row mt-5">
+    <div class="col-12">
+      <button id="send-all">An alle absenden</button>
+    </div>
+  </div>
+
+  <div class ="row mt-5">
+    <div class="col-12">
+      <ul id="personen">
+      </ul>
+    </div>
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+  <script>
+
+// Convert line breaks to html
+function nl2br (str) {
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
+};
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+function send(person_id,subject,body) {
+        $.ajax({
+          url: '{% url 'send_message' %}',
+          data: {
+            'person_id': person_id,
+            'body':body,
+            'subject':subject
+          },
+          dataType: 'json',
+          success: function (data) {
+            console.log(data);
+            alert(data.message);
+          }
+        })
+};
+
+$(document).ready(function(){
+    $("#send-single").click(function () {
+      var options = $("#id_Familienname").children()
+      // last option is selected person
+      var person_id = options[options.length-1].value;
+      var subject = document.getElementById("subject").value;
+      var body = document.getElementById("body").value;
+      send(person_id,subject,body);
+
+    });
+});
+
+$(document).ready(function(){
+    $("#send-all").click(function () {
+      var options = $("#id_Familienname").children();
+      // last option is selected person
+      var person_id = options[options.length-1].value;
+      send_all();
+    });
+});
+
+function send_all(){
+
+  var persons = document.getElementsByClassName("person"); // Get all person nodes
+  var pLen = persons.length;
+  var subject = document.getElementById("subject").value;
+  var body = document.getElementById("body").value;
+
+    for (var i = 0; i < pLen; i++) { // Iterate through returned records
+      person = persons[i];
+      console.log("person.value: " + person.value)
+      $.ajax({
+        type:"POST",
+        url: '{% url 'send_message' %}',
+        data: {
+          'person_id': person.value,
+          'subject': subject,
+          'body':body
+        },
+        dataType: 'json',
+        success: function (data) {
+          
+          console.log(data);
+          var person_id = data.person_id;
+          var id_string = "person_" + person_id;
+          console.log(id_string);
+          var person_element = document.getElementById(id_string);
+          // _person gets ul node
+          var _person = person_element.childNodes[0];
+
+          _person.style.fontWeight = "900";
+          if (data['e_mail'] == 0) {
+            _person.style.color = 'red';
+            _person.textContent = _person.textContent + " nicht versendet (keine E-Mail)";
+          } else {
+            _person.textContent = _person.textContent + ": " + data.message;
+          }
+        }
+      });}
+
+}
+</script>
+
+  <script>
+    // Script for building watchers that add and remove persons from invitation list when boxes checked
+    $("#group_selector").change(function () { // triggered when box is checked or unchecked
+      var group_id = $(this).val(); // Prio id is saved in value attribute
+      var ul = document.querySelector('#personen');
+      console.log("group_id:" + group_id);
+      var newUl = document.createElement('ul');
+      newUl.id = "personen";
+      ul.parentNode.replaceChild(newUl, ul);
+      // TODO: Remove existing elements from DOM before adding new ones!!
+      // var persons = document.getElementsByClassName("person");
+      // var pLen = persons.length;
+      // for (var i = 0; i < pLen; i++) { // Iterate through returned records
+      //   var element = persons[i];
+      //   element.parentNode.removeChild(element);
+      // }
+
+        $.ajax({
+          url: '{% url "get_people" %}',
+          data: {
+            'group_id': group_id
+          },
+          dataType: 'json',
+          success: function (data) {
+            var persons, pLen, i;
+            persons = data["html"];
+            person_ids = data["person_ids"]; // same order as persons
+            pLen = persons.length; // Can also be replaced with data returned
+            for (i = 0; i < pLen; i++) { // Iterate through returned records
+              var anode = document.createElement("A"); // Parent node of list node
+              anode.setAttribute('target','_blank') // Set link to open in new window
+              var node = document.createElement("LI"); // Displayed as list element
+              node.id = 'person_' + person_ids[i]; // Create id for easy updating
+              node.className = "person"; // Class name, also used to delete
+              node.setAttribute('value', person_ids[i]); // Person.id stored in value
+              anode.href = '/admin/crm/person/' + person_ids[i] + '/change/'; // Link to edit page
+              var textnode = document.createTextNode(persons[i]);
+              anode.appendChild(textnode);
+              node.appendChild(anode);
+              document.getElementById("personen").appendChild(node);
+            } // Add li tag to ul
+          }
+        });
+      });
+  </script>
+{% endblock %}

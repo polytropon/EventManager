@@ -1,0 +1,33 @@
+{% load admin_urls %}
+
+<tr>
+<td>
+  <ul>
+    {% for person in duplicate_set %}
+      <li class = "pk_list" data-pk={{ person.pk }}>
+        <a href="{% url person|admin_urlname:'change' person.pk %}" target = "_blank">{{ person.Familienname }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</td>
+<td>
+  <ul>
+    {% for person in duplicate_set %}
+      <li>{{ person.Vorname }}</li>
+    {% endfor %}
+  </ul>
+</td>
+<td>
+  <ul>
+    {% for person in duplicate_set %}
+      <li>{{ person.E_Mail }}</li>
+    {% endfor %}
+  </ul>
+</td>
+<td>
+  {% if duplicate_set|length > 1 %}
+    <button>zusammenführen</button>
+  {% else %}
+    zusammengeführt
+  {% endif %}
+</td>

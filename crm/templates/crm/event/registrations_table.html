@@ -1,0 +1,84 @@
+{% load input_div %}
+{% load admin_urls %}
+
+
+<table id="float_table" width ="100%" class = "table table-light table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th>
+          Details
+        </th>        
+        <th>
+          Name
+        </th>
+        {% for column,meta_field in columns.items %}
+        <th>
+          {% if column in formset.0.base_fields.items %}
+            {% for field in form.fields %}
+              {% if field.name == column %}                
+                {{ field.label }}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% if meta_field.verbose_name %}
+              {{ meta_field.verbose_name }}
+            {% else %}
+              {{ column }}
+            {% endif %}
+          {% endif %}
+        </th>
+        {% endfor %}
+      </tr>
+    </thead>
+  {% for form in formset %}
+    {% if form.instance.pk %}
+      <tr class = "{% if form.instance.Status == "Papierkorb" %}hide trash {% elif form.instance.referent %}bg-secondary{% endif %}">
+        <td>
+          <i class="{% if form.instance.Anmerkungen and not form.instance.referent %}text-primary{% elif not form.instance.Anmerkungen and form.instance.referent %}text-light{% elif not form.instance.Anmerkungen %}text-muted{% endif %} fas fa-inbox icon" data-toggle="modal" data-target="#ModalLong{{ form.instance.pk }}"></i>
+          <a href ="{% url form.instance.person|admin_urlname:'change' form.instance.person.pk %}" target ="_blank">
+            {% if form.instance.person.Priorität.Bezeichnung in "VIP,VIP+" %}
+              <i class="fas fa-user-tie icon"></i>
+            {% else %}
+              <i class="fas fa-user icon"></i>
+            {% endif %}
+          </a>          
+        </td>
+    
+        <td>
+          {% if form.instance and form.instance.person %}
+            {{ form.instance.person.name_with_titel }}
+          {% endif %}
+        </td>
+      
+      {% for column,meta_field in columns.items %}
+      <td>
+        {% if column in form.fields %}
+          {% for field in form %}
+            {% if field.name == column %}
+              {% include 'crm/ajax_forms/input_div.html' %}
+              {% if field.name == "bookingoption" %}
+                {% if field.form.instance.bookingoption.roomtype.occupants == 2 %}<p>{{ field.form.instance.Zweitperson_Zimmer }}</p>
+                <div id="room_partner{{ field.form.instance.pk }}">
+                    <strong><p onclick="roomPartner(event)" id ="roomPartner{{ field.form.instance.pk }}" data-pk="{{ field.form.instance.pk }}">
+                    {% if field.form.instance.room_partner %}
+                      {{ field.form.instance.room_partner }}
+                    {% else %}
+                      Zweitperson auswählen
+                    {% endif %}
+                  </p></strong>                  
+                </div>
+                {% endif %}
+              {% endif %}              
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% column_content form column %}
+        {% endif %}
+      </td>
+      {% endfor %}
+      </tr>
+    {% include 'crm/ajax_forms/modal.html' %}
+    {% endif %}
+  {% endfor %}
+  </table>
+  

@@ -1,0 +1,40 @@
+{% extends 'crm/base.html' %}
+{% load admin_urls %}
+{% load input_div %}
+{% block header %}
+<title>{{ obj }}</title>
+
+<style>
+    body .card {
+    /* font-family: 'Open Sans', sans-serif; */
+    text-align: center;
+    
+  }
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid"> 
+  <div class ="row mt-5">
+    {% render_form_dict table %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block javascript %}
+
+  <script>
+
+{% comment %}This script saves changes from all forms on the page.{% endcomment %}
+{% include 'crm/ajax_forms/javascript_save.js' %}
+
+{# Floating table headers #}
+{% include "crm/ajax_forms/floating_headers.js" %}
+  </script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% load admin_urls %}
+<ul class="list-group">
+  <li class="list-group-item">{{ statistics.bestätigt }} aus {{ statistics.Anmeldungen }} Anmeldungen bestätigt bei max. {{ event.Maximale_Teilnehmer_ }} Seminarteilnehmern
+    {% if statistics.zu_bestätigen %}
+      </br>({{statistics.confirmed_after_confirmation }} nach Versand)
+    {% endif %}
+  </li>
+  {% for option in statistics.bookingoptions %}
+    {% if option.number_entries %}
+    <li class="list-group-item">
+      <strong>{{ option.bookingoption.abbreviation }} – </strong>
+        {% for status in option.statuses %}
+          {% if status.1 %}
+            {{ status.0 }}: {{ status.1 }},
+          {% endif %}
+        {% endfor %}
+        gesamt {{ option.number_entries }}
+      </li>
+    {% endif %}
+  {% endfor %}
+  <li class="list-group-item">
+    <strong>Zimmer –</strong> {{ statistics.rooms_dict.bestätigt }} bestätigt{% if statistics.rooms_dict.zu_bestätigen %}, {{ statistics.rooms_dict.zu_bestätigen }} zu bestätigen, {{ statistics.rooms_dict.nach_Versand }} nach Versand{% endif %}{% if event.hotel_rooms %}, {{ event.hotel_rooms }} gebucht{% endif %}
+  </li>
+
+</ul>

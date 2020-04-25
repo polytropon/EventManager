@@ -1,0 +1,11 @@
+  <tbody>
+  {% for form in formset %}
+      <tr>
+      {% for field in form %}
+        <td>
+          {% include 'crm/ajax_forms/input_div.html' %}
+        </td>
+      {% endfor %}
+      </tr>
+  {% endfor %}
+  </tbody>

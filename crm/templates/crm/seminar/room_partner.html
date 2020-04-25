@@ -1,0 +1,12 @@
+{% load input_div %}
+{% for field in form %}
+    <div onfocusout="save(event)" class = 'editable' data-startvalue='{% field_content field %}' data-column='{{ field.name }}' data-pk='{{ field.form.instance.pk }}' data-model='{% form_model field %}' >
+            <select name="room_partner" onchange="roomPartnerChange(event)" id="id_room_partner">
+                <option value="{{ selected.pk }}" selected="">{{ selected.Vorname }} {{ selected.Familienname }}</option>
+                <option value>----------------</option>
+                {% for option in options %}
+                    <option value="{{ option.pk }}">{{ option.Vorname }} {{ option.Familienname }}</option>              
+                {% endfor %}
+            </select>
+    </div>
+{% endfor %}

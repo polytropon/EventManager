@@ -1,0 +1,71 @@
+{% extends 'crm/base.html' %}
+{% load admin_urls %}
+{% block header %}
+<title>{{ event.Format.Bezeichnung }} {{ event.Beginn|date:'d.m.y' }}</title>
+
+<style>
+    body .card {
+    /* font-family: 'Open Sans', sans-serif; */
+    text-align: center;
+    
+  }
+
+</style>
+{% endblock %}
+{% block content %}
+{% load input_div %}
+
+{% if event %}
+<div class="container-fluid">
+  <div class ="row mt-3">
+    <div class = "col-xs- 12 col-s-12 12 col-md-6 col-lg-4 mt-3">
+      {% include "crm/event/basic_data.html" %}
+    </div>
+    <div class = "col-xs- 12 col-s-12 12 col-md-6 col-lg-4 mt-3" id="statistics">
+    </div>
+    <div class = "col-xs- 12 col-s-12 12 col-md-12 col-lg-4 mt-3 ">
+      {% include "crm/event/tools.html" %}
+    </div>
+  </div>
+  {% if seminar_quickedit %}
+  <div class ="row mt-3">
+      {% render_form_dict seminar_quickedit %}
+  </div>
+  {% endif %}
+
+  <div class ="row mt-5">
+    {% render_form_dict registrations_table %}
+  </div>
+
+</div>
+
+{% else %}
+    <h3>Keine Veranstaltung</h3>
+  {% endif %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block javascript %}
+
+  <script>
+
+{% comment %}This script saves changes from all forms on the page.{% endcomment %}
+{% include 'crm/ajax_forms/javascript_save.js' %}
+
+{# React to changes in status, room partner, booking type #}
+{% include 'crm/event/roombookings.js' %}
+
+{# Floating table headers #}
+{% include "crm/ajax_forms/floating_headers.js" %}
+
+{% include "crm/event/tools.js" %}
+
+{% include "crm/event/statistics.js" %}
+
+  </script>
+
+
+
+{% endblock %}

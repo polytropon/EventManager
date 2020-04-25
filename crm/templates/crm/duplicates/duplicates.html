@@ -1,0 +1,73 @@
+{% extends 'crm/base.html' %}
+{% load admin_urls %}
+{% block header %}
+<title>Duplikate</title>
+{% endblock %}
+{% block content %}
+<h2>Duplikate: {{ duplicates|length }}<h2>
+<div id="table" class="floatThead-container">
+  <table id="anmeldungen" width ="100%" class ="table">
+    <thead>
+    <tr>
+      <th>Vorname</th>
+      <th>Nachname</th>
+      <th>E-Mail</th>
+      <th>zusammenführen</th>
+    </tr>
+    </thead>
+    {% for duplicate_set in duplicates %}
+    {% include "crm/duplicates/row.html" %}
+    {% endfor %}
+</table>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block javascript %}
+
+  <script> // Dieses listener hat zurzeit keine Funktion.
+
+    function merge(merge_list,tr) {
+          $.ajax({
+            url: '{% url 'merge_duplicates' %}',
+            data: JSON.stringify(merge_list),
+            // dataType: 'html',
+            dataType: 'json',
+            success: function (data) {
+              console.log("merge returns data:");
+              console.log(data);
+              tr.insertAdjacentHTML('afterend',data["new_row_html"]);
+              tr.parentNode.removeChild(tr);
+            }
+          });
+}
+
+    document.addEventListener('click', function(e){
+
+      // If an input element is clicked on...
+       if (e.target.tagName =="BUTTON") {
+         var tr = e.target.parentNode.parentNode;
+         var lis = tr.getElementsByClassName("pk_list");
+         var merge_list = [];
+         for (var i = 0; i < lis.length; i++) {
+           var li = lis[i];
+           merge_list.push(li.dataset.pk);
+         }
+         console.log(merge_list);
+         merge(merge_list,tr);
+       }
+    },false);
+
+// Schwebende Überschriften
+    var $table = $('#anmeldungen');
+    var reinit = $table.floatThead('destroy');
+    $('#anmeldungen').floatThead({
+      position: 'auto'
+    });
+
+
+  </script>
+
+{% endblock %}
